@@ -9,7 +9,7 @@ const Blackjack = () => {
     const [dealerScore, setDealerScore] = useState(0);
     const [message, setMessage] = useState('');
     const [playerBet, setPlayerBet] = useState(0)
-    const [balance, setBalance] = useState(0);
+    const [balance, setBalance] = useState(1000);
 
     useEffect(() => {
         const fetchNewDeck = async () => {
@@ -18,15 +18,15 @@ const Blackjack = () => {
             setDeckId(data.deck_id)
         }
         fetchNewDeck();
-    }, [])
+    }, []);
 
     const fetchCards = async (numCards, sendCards) => {
         const response = await fetch (`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=${numCards}`);
         const data = await response.json();
         if (sendCards === 'player') {
-            setPlayerCards([...playerCards, data.cards]);
+            setPlayerCards([...playerCards, ...data.cards]);
         } else {
-            setDealerCards([...dealerCards, data.cards]);
+            setDealerCards([...dealerCards, ...data.cards]);
         }
     };
 
@@ -48,7 +48,7 @@ const Blackjack = () => {
             aceCount --;
         };
         return score;
-    }
+    };
 
     const dealInitialCards = async () => {
         await fetchCards(2, 'player');
@@ -74,7 +74,7 @@ const Blackjack = () => {
 
     const gameHit = async () => {
         await fetchCards(1, 'player');
-    }
+    };
 
     const gameStand = async () => {
         let dealerScore = cardValue(dealerCards);
@@ -82,9 +82,55 @@ const Blackjack = () => {
             await fetchCards(1, 'dealer')
             dealerScore = cardValue([...dealerCards, dealerCards[dealerCards.length - 1]])
         }
-        // -> ADD FUNCTION INVOKE TO DETERMINE WINNER <-
-    }
+        determineWinner();
+    };
 
-}
+    const handleBetChange = (num) => {
+        setPlayerBet(parseInt(num.target.value));
+    };
+
+    const handleDeal = async () => {
+        if (balance < playerBet) {
+            setMessage('You don\'t have enough in your balance to play this bet. I reccomend winning a game!');
+            return;
+        }
+        setMessage('')
+        setPlayerCards([]);
+        setDealerCards([])
+        await dealInitialCards();
+        setPlayerScore(cardValue(playerCards));
+        setDealerScore(cardValue(dealerCards));
+    };
+
+    return (
+        <div>
+            <h1>Welcome to XXX Casino Blackjack!</h1>
+            <div>{`Balance: ${balance}`}</div>
+            <div>Bet:
+                <input type='number' value={playerBet} onChange={handleBetChange} />
+                <button onClick={handleDeal} disabled={balance < playerBet}>Deal</button>
+            </div>
+            <div>
+                <h2>Dealer</h2>
+                {dealerCards.map((card, index) => (
+                    <img key={index} src={card.image} alt={`${card.value} of ${card.suit}`} />
+                ))}
+                <div>{`Score: ${dealerScore}`}</div>
+            </div>
+            <div>
+                <h2>Player</h2>
+                {playerCards.map((card, index) => (
+                    <img key={index} src={card.image} alt={`${card.value} of ${card.suit}`} />
+                ))}
+                <div>{`Score: ${playerScore}`}</div>
+                <div>
+                    <button onClick={gameHit}>Hit</button>
+                    <button onClick={gameStand}>Stand</button>
+                </div>
+            </div>
+            <div>{message}</div>
+        </div>
+    );
+};
 
 export default Blackjack
