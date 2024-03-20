@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthenticator } from '@aws-amplify/ui-react';
+import { useNavigate } from 'react-router-dom';
 
 const Homepage = () => {
 
@@ -9,16 +10,21 @@ const Homepage = () => {
 
     }, [user])
 
+    const navigate = useNavigate();
+
     const handleWarClick = () => {
+        navigate('/war')
         console.log('war was clicked');
     }
 
     const handleBlackjackClick = () => {
+        navigate('/blackjack')
         console.log('blackjack was clicked');
     }
 
-    const handleLogonClick = () => {
-        console.log('Log on was clicked')
+    const handleLoginClick = () => {
+        navigate('/login')
+        console.log('Log in was clicked')
     }
 
     return (
@@ -28,7 +34,7 @@ const Homepage = () => {
             <button onClick={handleWarClick}>War</button>
             <button onClick={handleBlackjackClick}>Blackjack</button>
             { !user ?
-            <button onClick={handleLogonClick}>Log on</button>
+            <button onClick={handleLoginClick}>Log in</button>
             :
             <button onClick={signOut}>Log Out</button>
             }
