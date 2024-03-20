@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+import '../Homepage/War.js'
 
 const App = () => {
   const [deckId, setDeckId] = useState(null);

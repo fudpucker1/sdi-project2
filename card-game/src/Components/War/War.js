@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './War.css';
 
-const App = () => {
+const War = () => {
   const [deckId, setDeckId] = useState(null);
   const [player1Deck, setPlayer1Deck] = useState([]);
   const [player2Deck, setPlayer2Deck] = useState([]);
@@ -150,4 +150,4 @@ const App = () => {
 
 };
 
-export default App;
+export default War;
