@@ -51,7 +51,7 @@ export default Homepage;
             <li>Shuffle the deck and deal the entire deck evenly between the players.</li>
             <li>Each player reaveals the top card of their deck simultaneously.</li>
             <li>The player with the higher card takes both cards and adds them to the bottom of their deck.</li>
-            <li>If the cards are of equal value, a "war" occurs. In a war, each player places three additional cards face down and then one card face up. The player with the higher card wins all the cards on the table.</li>
+            <li>If the cards are of equal value, a "war" occurs. In a war, each player places their card on the buttom of their deck.</li>
             <li>The game continues until one player has all the cards, or until a predetermined number of rounds.</li>
         </ol>
     </div>
