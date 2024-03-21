@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react'
-
-
 const Blackjack = () => {
     const [deckId, setDeckId] = useState(null);
     const [playerCards, setPlayerCards] = useState([]);
@@ -10,7 +8,6 @@ const Blackjack = () => {
     const [message, setMessage] = useState('');
     const [playerBet, setPlayerBet] = useState(0)
     const [balance, setBalance] = useState(1000);
-
     useEffect(() => {
         const fetchNewDeck = async () => {
             const response = await fetch ('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=6');
@@ -19,7 +16,6 @@ const Blackjack = () => {
         }
         fetchNewDeck();
     }, []);
-
     const fetchCards = async (numCards, sendCards) => {
         const response = await fetch (`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=${numCards}`);
         const data = await response.json();
@@ -29,7 +25,6 @@ const Blackjack = () => {
             setDealerCards([...dealerCards, ...data.cards]);
         }
     };
-
     const cardValue = (cards) => {
         let score = 0;
         let aceCount = 0;
@@ -49,12 +44,10 @@ const Blackjack = () => {
         };
         return score;
     };
-
     const dealInitialCards = async () => {
         await fetchCards(2, 'player');
         await fetchCards(2, 'dealer');
     };
-
     const determineWinner = () => {
         const playerScore = cardValue(playerCards);
         const dealerScore = cardValue(dealerCards);
@@ -71,11 +64,9 @@ const Blackjack = () => {
             setBalance(balance - playerBet);
         }
     };
-
     const gameHit = async () => {
         await fetchCards(1, 'player');
     };
-
     const gameStand = async () => {
         let dealerScore = cardValue(dealerCards);
         while (dealerScore < 17) {
@@ -84,11 +75,9 @@ const Blackjack = () => {
         }
         determineWinner();
     };
-
     const handleBetChange = (num) => {
         setPlayerBet(parseInt(num.target.value));
     };
-
     const handleDeal = async () => {
         if (balance < playerBet) {
             setMessage('You don\'t have enough in your balance to play this bet. I reccomend winning a game!');
@@ -101,7 +90,14 @@ const Blackjack = () => {
         setPlayerScore(cardValue(playerCards));
         setDealerScore(cardValue(dealerCards));
     };
-
+    const replayGame = () => {
+        setPlayerCards([])
+        setDealerCards([])
+        setPlayerScore(0)
+        setDealerScore(0)
+        setMessage("")
+        setPlayerBet(0)
+    };
     return (
         <div>
             <h1>Welcome to XXX Casino Blackjack!</h1>
@@ -129,8 +125,12 @@ const Blackjack = () => {
                 </div>
             </div>
             <div>{message}</div>
+            {message && (
+                <div>
+                    <button onClick={replayGame}>Replay</button>
+                </div>
+            )}
         </div>
     );
 };
-
 export default Blackjack

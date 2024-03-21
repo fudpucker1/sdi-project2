@@ -12,6 +12,7 @@ const War = () => {
   const [winner, setWinner] = useState(null);
   const [player1CardAnimation, setPlayer1CardAnimation] = useState('');
   const [dealerCardAnimation, setDealerCardAnimation] = useState('');
+  const [round, setRound] = useState(1);
 
   useEffect(() => {
     async function createDeck() {
@@ -53,7 +54,7 @@ const War = () => {
     setPlayer1CardAnimation('');
     setDealerCardAnimation('');
 
-    if (player1Deck.length === 0 || dealerDeck.length === 0){
+    if (player1Deck.length === 0 || dealerDeck.length === 0 || round === 150){
       determineWinner();
       return;
     }
@@ -67,9 +68,10 @@ const War = () => {
     setDealerCardAnimation('card-battle-animation-right');
     setIsPlayer1CardDrawn(true);
     setIsDealerCardDrawn(true);
+    setRound(round + 1);
   };
 
-  const compareCards = (warDeck = []) => {
+  const compareCards = () => {
     if (player1Card && dealerCard) {
       const player1Value = getValue(player1Card.value);
       const dealerValue = getValue(dealerCard.value);
@@ -77,40 +79,23 @@ const War = () => {
       if (player1Value > dealerValue) {
         setWinner('Player 1 Wins');
         setDealerCardAnimation('card-fall-animation-right');
-        setPlayer1Deck(prevDeck => [...prevDeck, ...warDeck, player1Card, dealerCard]);
+        setPlayer1Deck(prevDeck => [...prevDeck, player1Card, dealerCard]);
       } else if (dealerValue > player1Value) {
         setWinner('Player 2 Wins');
         setPlayer1CardAnimation('card-fall-animation-left');
-        setDealerDeck(prevDeck => [...prevDeck, ...warDeck, player1Card, dealerCard]);
+        setDealerDeck(prevDeck => [...prevDeck, player1Card, dealerCard]);
       } else {
         setWinner('War!');
-        handleWar();
+        setDealerCardAnimation('card-fall-animation-right');
+        setPlayer1CardAnimation('card-fall-animation-left');
+        setPlayer1Deck(prevDeck => [...prevDeck, player1Card]);
+        setDealerDeck(prevDeck => [...prevDeck, dealerCard]);
       }
     }
   };
 
-  const handleWar = () => {
-    const player1WarCards = player1Deck.splice(0, 4);
-    const dealerWarCards = dealerDeck.splice(0, 4);
-
-    const player1FaceUpCard = player1WarCards.pop();
-    const dealerFaceUpCard = dealerWarCards.pop();
-
-    setPlayer1Card(player1FaceUpCard);
-    setDealerCard(dealerFaceUpCard);
-
-    const warDeck = [...player1WarCards, ...dealerWarCards];
-
-    setIsPlayer1CardDrawn(true);
-    setIsDealerCardDrawn(true);
-
-    setTimeout(() => {
-      compareCards(warDeck);
-    }, 1000)
-  };
-
   const determineWinner = () => {
-    if (dealerDeck.length === 0) {
+    if (dealerDeck.length === 0 || dealerDeck.length <=3) {
       setWinner('Player 1 Wins!!!');
       setDealerCardAnimation('card-fall-animation-right');
       setPlayer1CardAnimation('player-wins-animation');
@@ -166,7 +151,7 @@ const War = () => {
           <h4 className="deck-size">Deck Size: {player1Deck.length}</h4>
         </div>
         <div className="player">
-          <h3>Player 2</h3>
+          <h3>Dealer</h3>
           {dealerCard && (
             <img
               src={dealerCard.image}
@@ -180,7 +165,7 @@ const War = () => {
       <div className="buttons-container">
         {winner && (
           <div>
-            <h2>{winner}</h2>
+            <h2>Round {round}: {winner}</h2>
           </div>
         )}
         <div>

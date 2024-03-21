@@ -5,11 +5,6 @@ import { useNavigate } from 'react-router-dom';
 const Homepage = () => {
 
     const { user, signOut } = useAuthenticator((context) => [context.user]);
-
-    useEffect(() => {
-
-    }, [user])
-
     const navigate = useNavigate();
 
     const handleWarClick = () => {

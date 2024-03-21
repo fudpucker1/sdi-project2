@@ -1,9 +1,11 @@
 import React from "react";
+import {useEffect} from 'react';
 import { Amplify } from 'aws-amplify';
-import { Authenticator } from '@aws-amplify/ui-react';
+import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react';
 import Homepage from "./../Homepage/Homepage.js"
 import '@aws-amplify/ui-react/styles.css';
 import {UserContext} from "./../../App.js";
+import { useNavigate } from 'react-router-dom';
 
 const awsExports = {
     "REGION" : "us-east-1",
@@ -24,35 +26,42 @@ Amplify.configure({
 
 const Login = () => {
 
-    return (
-        <Authenticator initialState='signIn'
-    components={{
-      SignUp: {
-        FormFields() {
+  const { user, signOut, route } = useAuthenticator((context) => [context.user]);
+  const navigate = useNavigate();
 
-          return (
-            <>
-              <Authenticator.SignUp.FormFields />
-              <div><label>Email</label></div>
-              <input
-                type="text"
-                name="email"
-                placeholder="Please enter a valid email"
-              />
-            </>
-          );
-        },
+  useEffect(() => {
+    if (route == "authenticated")
+      navigate('/');
+  }, [user])
+
+  return (
+      <Authenticator initialState='signIn'
+  components={{
+    SignUp: {
+      FormFields() {
+
+        return (
+          <>
+            <Authenticator.SignUp.FormFields />
+            <div><label>Email</label></div>
+            <input
+              type="text"
+              name="email"
+              placeholder="Please enter a valid email"
+            />
+          </>
+        );
       },
+    },
+  }}
+  >
+    {({ signOut, user}) => {
+      console.log("User is")
+      console.log(user)
+      return <button onClick={signOut}>Log out</button>
     }}
-    >
-      {({ signOut, user}) => {
-        console.log("User is")
-        console.log(user)
-        return <Homepage />
-      }}
-      {/* <h1>Howdy</h1> */}
-    </Authenticator>
-    )
+  </Authenticator>
+  )
 }
 
 export default Login;
