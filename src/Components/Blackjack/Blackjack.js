@@ -125,11 +125,9 @@ const Blackjack = () => {
                 </div>
             </div>
             <div>{message}</div>
-            {message && (
-                <div>
-                    <button onClick={replayGame}>Replay</button>
-                </div>
-            )}
+            <div>
+                <button onClick={replayGame}>Replay</button>
+            </div>
         </div>
     );
 };
