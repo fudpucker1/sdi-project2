@@ -129,6 +129,9 @@ const Blackjack = () => {
                 </div>
             </div>
             <div>{message}</div>
+            <div>
+                <button onClick={replayGame}>Replay</button>
+            </div>
         </div>
     );
 };
