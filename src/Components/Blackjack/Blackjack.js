@@ -11,7 +11,31 @@ display: flex;
 flex-direction: column;
 align-items: center;
 `
+const HeaderContainer = styled.div `
+margin-bottom: 20px;
+`
 
+const DealerContainer = styled.div`
+display: flex;
+justify-content: center;
+align-items: center;
+margin-bottom: 20px
+text-align: center;
+`
+
+const PlayerContainer = styled.div`
+display: flex;
+justify-content: center;
+align-items: center;
+margin-top: auto;
+margin-bottom: 20px
+text-align: center;
+`
+
+const Card = styled.img`
+width: 100px;
+margin: 0 5px;
+`
 
 const Blackjack = () => {
     const [deckId, setDeckId] = useState(null);
@@ -22,6 +46,7 @@ const Blackjack = () => {
     const [message, setMessage] = useState('');
     const [playerBet, setPlayerBet] = useState(0)
     const [balance, setBalance] = useState(1000);
+    const [gameStarted, setGameStarted] = useState(false)
     const [gameOver, setGameOver] = useState(false)
 
 
@@ -117,7 +142,11 @@ const Blackjack = () => {
 
     const handleDeal = async () => {
         if (gameOver || balance < playerBet) {
-            setMessage('You don\'t have enough in your balance to play this bet. I reccomend winning a game!');
+            alert('You don\'t have enough in your balance to play this bet. I reccomend winning a game!');
+            return;
+        }
+        if (playerBet === 0) {
+            alert('Please place a bet in order for the house to deal!')
             return;
         }
         setMessage('')
@@ -126,6 +155,7 @@ const Blackjack = () => {
         await dealInitialCards();
         setPlayerScore(cardValue(playerCards));
         setDealerScore(cardValue(dealerCards));
+        setGameStarted(true);
         setGameOver(false);
     };
 
@@ -136,42 +166,56 @@ const Blackjack = () => {
         setDealerScore(0);
         setMessage("");
         setPlayerBet(0);
+        setGameStarted(false);
         setGameOver(false);
     };
 
 
+
     return (
         <Container>
-            <div>
+            <HeaderContainer>
                 <h1>Welcome to SDI Casino Blackjack!</h1>
                 <div>{`Balance: ${balance}`}</div>
                 <div>Bet:
                     <input type='number' value={playerBet} onChange={handleBetChange} />
                     <button onClick={handleDeal} disabled={gameOver || balance < playerBet}>Deal</button>
                 </div>
+            </HeaderContainer>
+            <DealerContainer>
                 <div>
                     <h2>Dealer</h2>
-                    {dealerCards.map((card, index) => (
-                        <img key={index} src={card.image} alt={`${card.value} of ${card.suit}`} />
-                    ))}
+                    {/* Dealer's cards */}
+                    <DealerContainer>
+                        {dealerCards.map((card, index) => (
+                        <Card key={index} src={card.image} alt={`${card.value} of ${card.suit}`} />
+                        ))}
+                    </DealerContainer>
                     <div>{`Score: ${dealerScore}`}</div>
                 </div>
-                <div>
+            </DealerContainer>
+            <PlayerContainer>
+                <div style={{ textAlign: 'center' }}>
                     <h2>Player</h2>
-                    {playerCards.map((card, index) => (
-                        <img key={index} src={card.image} alt={`${card.value} of ${card.suit}`} />
-                    ))}
-                    <div>{`Score: ${playerScore}`}</div>
+                    {/* Player's cards */}
+                    <PlayerContainer>
+                        {playerCards.map((card, index) => (
+                        <Card key={index} src={card.image} alt={`${card.value} of ${card.suit}`} />
+                        ))}
+                    </PlayerContainer>
+                    <div style={{ textAlign: 'center' }}>{`Score: ${playerScore}`}</div>
                     <div>
-                        <button onClick={gameHit}>Hit</button>
-                        <button onClick={gameStand}>Stand</button>
+                        <button onClick={gameHit} disabled={!gameStarted || gameOver}>Hit</button>
+                        <button onClick={gameStand} disabled={!gameStarted || gameOver}>Stand</button>
                     </div>
                 </div>
-                <div>{message}</div>
-                <div>
-                    <button onClick={replayGame} disabled={!gameOver}>Replay</button>
-                </div>
+            </PlayerContainer>
+            <div>{message}</div>
+            {gameOver && (
+            <div>
+                <button onClick={replayGame} disabled={!gameOver}>Replay</button>
             </div>
+            )}
         </Container>
     );
 };

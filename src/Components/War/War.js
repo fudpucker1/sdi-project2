@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import './War.css';
+import { UserContext } from '../../App.js';
 
 const War = () => {
   const [deckId, setDeckId] = useState(null);
@@ -12,7 +13,10 @@ const War = () => {
   const [winner, setWinner] = useState(null);
   const [player1CardAnimation, setPlayer1CardAnimation] = useState('');
   const [dealerCardAnimation, setDealerCardAnimation] = useState('');
+  const [gameOver, setGameOver] = useState(false);
   const [round, setRound] = useState(1);
+  const { userData, postBalance } = useContext(UserContext);
+  const allowedRounds = 10; // Set the max number of rounds
 
   useEffect(() => {
     async function createDeck() {
@@ -54,8 +58,9 @@ const War = () => {
     setPlayer1CardAnimation('');
     setDealerCardAnimation('');
 
-    if (player1Deck.length === 0 || dealerDeck.length === 0 || round === 150){
+    if (player1Deck.length === 0 || dealerDeck.length === 0 || round === allowedRounds){
       determineWinner();
+      setGameOver(true);
       return;
     }
 
@@ -95,14 +100,18 @@ const War = () => {
   };
 
   const determineWinner = () => {
-    if (dealerDeck.length === 0 || dealerDeck.length <=3) {
+    if (dealerDeck.length === 0 || dealerDeck.length <=3 || dealerDeck.length < player1Deck.length) {
+      const newBalance = userData.winnings + 30;
       setWinner('Player 1 Wins!!!');
       setDealerCardAnimation('card-fall-animation-right');
       setPlayer1CardAnimation('player-wins-animation');
+      postBalance(newBalance)
     } else {
+      const newBalance = userData.winnings - 30;
       setWinner('Dealer Wins!!!');
       setPlayer1CardAnimation('card-fall-animation-left');
       setDealerCardAnimation('player-wins-animation');
+      postBalance(newBalance)
     }
   };
 
@@ -127,6 +136,8 @@ const War = () => {
     setDealerDeck([]);
     setPlayer1Card(null);
     setDealerCard(null);
+    setRound(1);
+    setGameOver(false);
     const response = await fetch(`https://deckofcardsapi.com/api/deck/${deckId}/shuffle/`);
     const data = await response.json();
     if (data.success) {
@@ -169,7 +180,7 @@ const War = () => {
           </div>
         )}
         <div>
-          <button onClick={drawCards}>Draw Cards</button>
+          <button onClick={drawCards} disabled={gameOver}>Draw Cards</button>
           <button onClick={restartGame}>Restart Game</button>
         </div>
       </div>

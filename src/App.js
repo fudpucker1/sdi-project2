@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link} from "react-router-dom";
 import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react';
 import War from "./War.js"
@@ -21,10 +21,27 @@ const App = () => {
 const UserContextProvider = () => {
 
   const [userData, setUserData] = useState({username: 'default', winnings: 0})
-  const { user, signOut } = useAuthenticator((context) => [context.user]);
+  const { user, signOut, route } = useAuthenticator((context) => [context.user]);
+
+  const postBalance = (newBalance) => {
+    fetch('https://6x4u2qgurl.execute-api.us-east-1.amazonaws.com/test/users', {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ "username": user.username, "winnings": newBalance})
+    })
+    setUserData({username: user.username, winnings: newBalance})
+  }
+
+  useEffect(() => {
+    if (user) {
+      fetch(`https://6x4u2qgurl.execute-api.us-east-1.amazonaws.com/test/users/${user.username}`)
+        .then(response => response.json())
+        .then(jsonResponse => setUserData({username: user.username, winnings: jsonResponse.winnings}))
+    }
+  }, [user])
 
   return (
-      <UserContext.Provider value={{userData, setUserData}}>
+      <UserContext.Provider value={{userData, setUserData, postBalance}}>
         <Router>
           <div className="header">
             <div className="logo">
@@ -36,12 +53,20 @@ const UserContextProvider = () => {
             </div>
             <div className="pageLinks">
               <div className="loginDetails">
-                { !user ? "Please Sign In." : <h2>Welcome, {user.username}</h2>}
+                { !user ? <h3>Please Sign In.</h3> : <h3>Welcome, {user.username} Balance: ${userData.winnings}</h3>}
               </div>
               <div className="gameLink">
                 <div className="buttonContainer">
-                  <Link to="/war"><button>War</button></Link>
-                  <Link to="/blackjack"><button>Blackjack</button></Link>
+                  { !user ?
+                    <Link to="/war"><button disabled={true}>War</button></Link>
+                  :
+                    <Link to="/war"><button disabled={false}>War</button></Link>
+                  }
+                  { !user ?
+                    <Link to="/blackjack"><button disabled={true}>Blackjack</button></Link>
+                  :
+                    <Link to="/blackjack"><button disabled={false}>Blackjack</button></Link>
+                  }
                 </div>
               </div>
               <div className="loginLink">

@@ -1,5 +1,5 @@
 import React from "react";
-import {useEffect} from 'react';
+import {useEffect, useContext} from 'react';
 import { Amplify } from 'aws-amplify';
 import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react';
 import Homepage from "./../Homepage/Homepage.js"
@@ -27,11 +27,16 @@ Amplify.configure({
 const Login = () => {
 
   const { user, signOut, route } = useAuthenticator((context) => [context.user]);
+  const {userData, setUserData} = useContext(UserContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (route == "authenticated")
+    if (route == "authenticated") {
+      fetch(`https://6x4u2qgurl.execute-api.us-east-1.amazonaws.com/test/users/${user.username}`)
+        .then(response => response.json())
+        .then(jsonResponse => setUserData({username: user.username, winnings: jsonResponse.winnings}))
       navigate('/');
+    }
   }, [user])
 
   return (
@@ -56,8 +61,6 @@ const Login = () => {
   }}
   >
     {({ signOut, user}) => {
-      console.log("User is")
-      console.log(user)
       return <button onClick={signOut}>Log out</button>
     }}
   </Authenticator>
