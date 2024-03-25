@@ -14,9 +14,9 @@ const War = () => {
   const [player1CardAnimation, setPlayer1CardAnimation] = useState('');
   const [dealerCardAnimation, setDealerCardAnimation] = useState('');
   const [gameOver, setGameOver] = useState(false);
-  const [round, setRound] = useState(1);
+  const [round, setRound] = useState(0);
   const { userData, postBalance } = useContext(UserContext);
-  const allowedRounds = 10; // Set the max number of rounds
+  const allowedRounds = 100; // Set the max number of rounds
 
   useEffect(() => {
     async function createDeck() {
@@ -52,28 +52,33 @@ const War = () => {
 
     setPlayer1Deck(player1Half);
     setDealerDeck(dealerHalf);
+
   }
 
   const drawCards = async () => {
-    setPlayer1CardAnimation('');
-    setDealerCardAnimation('');
+    if (userData.winnings >= 30){
+      setPlayer1CardAnimation('');
+      setDealerCardAnimation('');
 
-    if (player1Deck.length === 0 || dealerDeck.length === 0 || round === allowedRounds){
-      determineWinner();
-      setGameOver(true);
-      return;
-    }
+      if (player1Deck.length === 0 || dealerDeck.length === 0 || round === allowedRounds){
+        determineWinner();
+        setGameOver(true);
+        return;
+      }
 
-    const player1NewCard = player1Deck.shift();
-    const dealerNewCard = dealerDeck.shift();
+      const player1NewCard = player1Deck.shift();
+      const dealerNewCard = dealerDeck.shift();
 
-    setPlayer1Card(player1NewCard);
-    setDealerCard(dealerNewCard);
-    setPlayer1CardAnimation('card-battle-animation-left');
-    setDealerCardAnimation('card-battle-animation-right');
-    setIsPlayer1CardDrawn(true);
-    setIsDealerCardDrawn(true);
-    setRound(round + 1);
+      setPlayer1Card(player1NewCard);
+      setDealerCard(dealerNewCard);
+      setPlayer1CardAnimation('card-battle-animation-left');
+      setDealerCardAnimation('card-battle-animation-right');
+      setIsPlayer1CardDrawn(true);
+      setIsDealerCardDrawn(true);
+      setRound(round + 1);
+    } else {
+      alert(`Insufficient funds to play a round of War.`)
+  }
   };
 
   const compareCards = () => {
@@ -82,11 +87,11 @@ const War = () => {
       const dealerValue = getValue(dealerCard.value);
 
       if (player1Value > dealerValue) {
-        setWinner('Player 1 Wins');
+        setWinner(`${userData.username} Wins`);
         setDealerCardAnimation('card-fall-animation-right');
         setPlayer1Deck(prevDeck => [...prevDeck, player1Card, dealerCard]);
       } else if (dealerValue > player1Value) {
-        setWinner('Player 2 Wins');
+        setWinner('Dealer Wins');
         setPlayer1CardAnimation('card-fall-animation-left');
         setDealerDeck(prevDeck => [...prevDeck, player1Card, dealerCard]);
       } else {
@@ -102,7 +107,7 @@ const War = () => {
   const determineWinner = () => {
     if (dealerDeck.length === 0 || dealerDeck.length <=3 || dealerDeck.length < player1Deck.length) {
       const newBalance = userData.winnings + 30;
-      setWinner('Player 1 Wins!!!');
+      setWinner(`${userData.username} Wins!!!`);
       setDealerCardAnimation('card-fall-animation-right');
       setPlayer1CardAnimation('player-wins-animation');
       postBalance(newBalance)
@@ -131,12 +136,16 @@ const War = () => {
   };
 
   const restartGame = async () => {
+    if (round < allowedRounds && player1Deck < dealerDeck){
+      const newBalance = userData.winnings - 30;
+      postBalance(newBalance)
+    }
     setWinner(null);
     setPlayer1Deck([]);
     setDealerDeck([]);
     setPlayer1Card(null);
     setDealerCard(null);
-    setRound(1);
+    setRound(0);
     setGameOver(false);
     const response = await fetch(`https://deckofcardsapi.com/api/deck/${deckId}/shuffle/`);
     const data = await response.json();

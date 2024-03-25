@@ -22,15 +22,14 @@ const App = () => {
 const UserContextProvider = () => {
 
   const [userData, setUserData] = useState({username: 'default', winnings: 0})
-  const { user, signOut, route } = useAuthenticator((context) => [context.user]);
+  const { user, signOut } = useAuthenticator((context) => [context.user]);
 
   const postBalance = (newBalance) => {
     fetch('https://6x4u2qgurl.execute-api.us-east-1.amazonaws.com/test/users', {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ "username": user.username, "winnings": newBalance})
-    })
-    setUserData({username: user.username, winnings: newBalance})
+    }).then(() => setUserData({username: user.username, winnings: newBalance}))
   }
 
   useEffect(() => {

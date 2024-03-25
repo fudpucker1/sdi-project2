@@ -7,19 +7,19 @@ const Homepage = () => {
     return (
         <div className="rules-pane">
             <div className="war-pane">
-                <h2>How to Play War</h2>
+                <h2>How to play War</h2>
                 <p>War is a simple card game played by two player. Here's how it's played:</p>
                 <ol>
                     <li>Shuffle the deck and deal the entire deck evenly between the players.</li>
                     <li>Each player reaveals the top card of their deck simultaneously.</li>
                     <li>The player with the higher card takes both cards and adds them to the bottom of their deck.</li>
                     <li>If the cards are of equal value, a "war" occurs. In a war, each player places their card on the buttom of their deck.</li>
-                    <li>The game continues until one player has all the cards, or until a predetermined number of rounds (150).</li>
+                    <li>The game continues until one player has all the cards, or until a predetermined number of rounds (100).</li>
                 </ol>
             </div>
 
             <div className="blackjack-pane">
-                <h2>How to Blackjack</h2>
+                <h2>How to play Blackjack</h2>
                 <p>Blackjack, also known as 21, is a popular card game. Here's how it's played:</p>
                 <ol>
                     <li>The dealer deals two cards to each player, including themselves. All cards are dealt face up except one of the dealer's cards, which is dealt face down.</li>

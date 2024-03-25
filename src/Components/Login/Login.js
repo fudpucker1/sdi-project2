@@ -6,6 +6,7 @@ import Homepage from "./../Homepage/Homepage.js"
 import '@aws-amplify/ui-react/styles.css';
 import {UserContext} from "./../../App.js";
 import { useNavigate } from 'react-router-dom';
+import "./Login.css"
 
 const awsExports = {
     "REGION" : "us-east-1",
@@ -41,7 +42,8 @@ const Login = () => {
 
   return (
       <Authenticator initialState='signIn'
-  components={{
+    className="formPane"
+    components={{
     SignUp: {
       FormFields() {
 
