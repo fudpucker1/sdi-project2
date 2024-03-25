@@ -5,6 +5,7 @@ import War from "./War.js"
 import Blackjack from "./Blackjack.js"
 import Homepage from "./Homepage.js"
 import Login from "./Login.js"
+import Highscores from './Components/Highscores/Highscores.js';
 import './App.css';
 
 export const UserContext = React.createContext();
@@ -84,6 +85,7 @@ const UserContextProvider = () => {
               <Route path="/blackjack" element={<Blackjack/>}/>
             </Routes>
           </div>
+          <Highscores/>
         </ Router>
       </ UserContext.Provider>
   );

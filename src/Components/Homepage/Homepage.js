@@ -1,4 +1,5 @@
 import React from 'react';
+import Highscores from '../Highscores/Highscores';
 import './Homepage.css'
 
 const Homepage = () => {

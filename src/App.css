@@ -1,5 +1,6 @@
 body {
   background-color:rgb(221, 210, 167);
+  padding: 20px;
 }
 
 button {
@@ -16,10 +17,6 @@ button {
 
 button:hover {
   background-color: #0056b3;
-}
-
-.header {
-  padding: 20px;
 }
 
 .logo {
